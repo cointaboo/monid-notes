@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Monid 实操笔记 — 按次付费的数据 API 怎么用</title>
+<meta name="description" content="Monid 是按次付费的数据接口网关，2800+ 工具一个钱包。这里记录实际用法、真实价格和踩过的坑。">
+<link rel="canonical" href="https://cointaboo.github.io/monid-notes/">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","name":"Monid 实操笔记","url":"https://cointaboo.github.io/monid-notes/"}
+</script>
+<style>
+:root{--ink:#111;--muted:#666;--line:#e6e6e6;--accent:#2563eb;--bg:#fff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.75 -apple-system,"PingFang SC","Noto Sans SC",Segoe UI,sans-serif}
+.wrap{max-width:720px;margin:0 auto;padding:48px 22px 80px}
+h1{font-size:30px;line-height:1.3;margin:0 0 8px}
+.sub{color:var(--muted);margin:0 0 36px;font-size:15px}
+h2{font-size:20px;margin:34px 0 10px}
+p{margin:0 0 14px}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+code{background:#f3f4f6;border-radius:4px;padding:1px 5px;font-size:14px;font-family:ui-monospace,Menlo,monospace}
+pre{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:16px;overflow:auto;font-size:13.5px;line-height:1.6}
+pre code{background:none;color:inherit;padding:0}
+.cta{border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:36px 0;background:#fafafa}
+.cta b{display:block;margin-bottom:6px}
+.list a{display:block;padding:14px 0;border-bottom:1px solid var(--line)}
+.list a span{display:block;color:var(--muted);font-size:14px;margin-top:4px}
+footer{margin-top:56px;color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Monid 实操笔记</h1>
+<p class="sub">按次付费的数据接口网关。这里只写实际跑过的东西、真实价格，和踩过的坑。</p>
+
+<div class="list">
+  <a href="monid-what-it-is.html">Monid 是什么：2800 个数据接口，一个钱包
+    <span>它解决的问题、计费方式、三步接入，以及它不做什么</span></a>
+  <a href="scrape-x-posts.html">用 Monid 抓 X 推文：一条 $0.0004
+    <span>discover → inspect → run 完整实操，含参数踩坑</span></a>
+  <a href="pay-per-call-vs-subscription.html">按次付费 vs 订阅：什么时候该用哪个
+    <span>算一遍真实账单，什么量级下按次更划算</span></a>
+</div>
+
+<div class="cta">
+  <b>关于这些笔记</b>
+  我们自己在用 Monid 做社媒数据采集和行情监控，笔记里的价格和参数都来自实际调用记录。
+  通过 <a href="https://monid.ai/?fpr=REPLACE_CODE" rel="sponsored nofollow">这个链接</a> 注册，
+  你和我们都能拿到额外的调用额度。
+</div>
+
+<footer>内容基于实际使用记录整理，价格以 Monid 官网为准。</footer>
+</div>
+</body>
+</html>

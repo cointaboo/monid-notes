@@ -1,0 +1,8 @@
+# Monid 实操笔记
+
+> 按次付费数据接口网关 Monid 的使用笔记：真实价格、CLI 命令、踩坑。
+
+## 文章
+- [Monid 是什么](https://cointaboo.github.io/monid-notes/monid-what-it-is.html): 2800+ 数据接口，一个钱包，按次计费
+- [抓 X 推文实操](https://cointaboo.github.io/monid-notes/scrape-x-posts.html): $0.0004/条，discover/inspect/run 三步
+- [按次付费 vs 订阅](https://cointaboo.github.io/monid-notes/pay-per-call-vs-subscription.html): 盈亏平衡点在 12 万条/月

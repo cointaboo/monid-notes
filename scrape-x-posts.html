@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>用 Monid 抓 X 推文：一条 $0.0004 的完整实操</title>
+<meta name="description" content="用 Monid 的 Apify 接口抓 X 推文，$0.0004/条。discover → inspect → run 完整命令、参数结构、价格计算和你一定会遇到的三个坑。">
+<link rel="canonical" href="https://cointaboo.github.io/monid-notes/scrape-x-posts.html">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"用 Monid 抓 X 推文：一条 $0.0004 的完整实操","datePublished":"2026-11-18"}
+</script>
+<style>
+:root{--ink:#111;--muted:#666;--line:#e6e6e6;--accent:#2563eb}
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);font:16px/1.75 -apple-system,"PingFang SC","Noto Sans SC",Segoe UI,sans-serif}
+.wrap{max-width:720px;margin:0 auto;padding:48px 22px 80px}
+h1{font-size:28px;line-height:1.35;margin:0 0 10px}
+h2{font-size:20px;margin:32px 0 10px}
+p{margin:0 0 14px}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+code{background:#f3f4f6;border-radius:4px;padding:1px 5px;font-size:14px;font-family:ui-monospace,Menlo,monospace}
+pre{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:16px;overflow:auto;font-size:13.5px}
+pre code{background:none;color:inherit}
+.meta{color:var(--muted);font-size:14px;margin-bottom:28px}
+.cta{border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:32px 0;background:#fafafa;font-size:15px}
+.warn{border-left:3px solid #f59e0b;padding-left:14px;color:#444;margin:18px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+<p><a href="./">← 返回目录</a></p>
+<h1>用 Monid 抓 X 推文：一条 $0.0004 的完整实操</h1>
+<p class="meta">2026-11-18 · 实测价格与命令</p>
+
+<p>抓 X 数据最麻烦的不是解析，是拿不到：Guest API 限制多、登录态容易掉、IP 一换就验证。走 Apify 的 tweet-scraper 能绕开这些，但 Apify 自己的计费是按 run 算的，小批量用不划算。</p>
+<p>Monid 把这层包了：<b>按条计费，一条推文 $0.0004。</b>一万条四美元。</p>
+
+<h2>第一步：确认接口还在、价格多少</h2>
+<pre><code>monid discover -q "twitter tweets search" -l 5 -j</code></pre>
+<p>返回里会带每个接口的单价、健康度和调用方式。找 <code>apify / apidojo/tweet-scraper</code>，$0.0004/条。</p>
+
+<h2>第二步：读参数 schema，别猜</h2>
+<pre><code>monid inspect -p apify -e /apidojo/tweet-scraper -j</code></pre>
+<p>这一步省时间的地方在于：它把 body、query、path 三块参数分开列出来。很多人直接照着 Apify 网页文档填参数，字段名对不上就报 400。</p>
+
+<h2>第三步：跑</h2>
+<pre><code>monid run -p apify -e /apidojo/tweet-scraper \
+  -i '{"searchTerms":["AI 中转站"],"maxItems":20}' -w -j</code></pre>
+<p>Apify 是异步的：提交后返回 202 和一个 runId。加 <code>-w</code> 让它帮你轮询到结果出来。</p>
+
+<h2>三个实际会遇到的坑</h2>
+<div class="warn">
+<p><b>1. 拿到的条数不等于 maxItems。</b>搜索结果去重、转推过滤之后会少。想要 50 条有效数据，maxItems 建议设 80。</p>
+</div>
+<div class="warn">
+<p><b>2. 中文关键词的结果质量取决于输入写法。</b>"AI 中转站" 能搜到，但 "AI中转" 和 "AI 中转" 是两个不同的查询。要覆盖全，就在 searchTerms 里放多个变体，一次请求跑完。</p>
+</div>
+<div class="warn">
+<p><b>3. 余额是真的会扣。</b><code>monid run</code> 直接扣钱包，没有"沙盒模式"。先用 maxItems=5 试通，再放大。</p>
+</div>
+
+<h2>成本怎么算</h2>
+<p>按条计费的好处是成本可预测：</p>
+<pre><code>每天抓 500 条 × $0.0004 = $0.2 / 天
+一个月 15,000 条          = $6 / 月</code></pre>
+<p>同样的量走 Apify 自己的套餐，起充是 $49/月。这就是网关的价值——不为一周跑一次的任务付月费。</p>
+
+<h2>拿到数据之后</h2>
+<p>返回是结构化 JSON，直接进你的分析流程：监控竞品调价、统计某个话题的传播曲线、筛出有购买意向的账号做线索。我们自己的用法是每天跑一次关键词，把结果落到本地库里做趋势对比。</p>
+
+<div class="cta">
+<a href="https://monid.ai/?fpr=REPLACE_CODE" rel="sponsored nofollow">通过这个链接注册 Monid</a>，
+送 $1 额度，按上面的命令够跑 2,500 条推文。
+</div>
+
+<p><a href="./">← 返回目录</a></p>
+</div>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Monid 是什么：2800 个数据接口，一个钱包</title>
+<meta name="description" content="Monid 是按次付费的数据接口网关：2800+ 工具、55+ 上游，一个 API key 一个钱包，按调用扣费。讲清它解决什么问题、怎么接入、不做什么。">
+<link rel="canonical" href="https://cointaboo.github.io/monid-notes/monid-what-it-is.html">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Monid 是什么：2800 个数据接口，一个钱包","datePublished":"2026-11-18","author":{"@type":"Organization","name":"Monid 实操笔记"}}
+</script>
+<style>
+:root{--ink:#111;--muted:#666;--line:#e6e6e6;--accent:#2563eb}
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);font:16px/1.75 -apple-system,"PingFang SC","Noto Sans SC",Segoe UI,sans-serif}
+.wrap{max-width:720px;margin:0 auto;padding:48px 22px 80px}
+h1{font-size:28px;line-height:1.35;margin:0 0 10px}
+h2{font-size:20px;margin:32px 0 10px}
+p{margin:0 0 14px}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+code{background:#f3f4f6;border-radius:4px;padding:1px 5px;font-size:14px;font-family:ui-monospace,Menlo,monospace}
+pre{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:16px;overflow:auto;font-size:13.5px}
+pre code{background:none;color:inherit}
+.meta{color:var(--muted);font-size:14px;margin-bottom:28px}
+.cta{border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:32px 0;background:#fafafa;font-size:15px}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:14px 0}
+th,td{border-bottom:1px solid var(--line);padding:8px 6px;text-align:left}
+th{color:var(--muted);font-weight:500}
+</style>
+</head>
+<body>
+<div class="wrap">
+<p><a href="./">← 返回目录</a></p>
+<h1>Monid 是什么：2800 个数据接口，一个钱包</h1>
+<p class="meta">2026-11-18 · 基于实际调用记录</p>
+
+<p>如果你想抓 TikTok 的爆款视频、X 上的关键词推文、Amazon 的商品价格、或者找某个人的商务邮箱，通常有三条路：自己写爬虫、买某个平台单独的 API、或者一次性接一堆第三方服务。</p>
+
+<p>Monid 是第四条：<b>一个网关，把 2800 多个数据接口聚到一个 API key 和一个预付费钱包后面，按调用次数扣费。</b></p>
+
+<h2>它解决的具体问题</h2>
+<p>自己写爬虫的成本不在代码，在于维护：目标站改版、加验证码、封 IP，每一样都要人盯。买单个平台的 API 又会出现另一种麻烦——你有五个需求，就要注册五个平台、充五次钱、记五套鉴权。</p>
+<p>Monid 把这些上游（Apify、TikHub、DataForSEO、Hunter.io、ContactOut、search1api 等）统一到一套接口后面。你只需要关心三件事：找到接口、读它的参数、调用它。</p>
+
+<h2>计费方式</h2>
+<p>没有订阅，按次扣费。不同接口价格差很多：</p>
+<table>
+<tr><th>类型</th><th>价格区间</th><th>例子</th></tr>
+<tr><td>按结果计费</td><td>$0.0003 – 0.0026 / 条</td><td>X 推文 $0.0004/条，TikTok 视频 $0.0003/条</td></tr>
+<tr><td>按调用计费</td><td>$0.001 – 0.01 / 次</td><td>搜索趋势 $0.001，Amazon 商品 $0.0033</td></tr>
+<tr><td>阶梯（人肉数据）</td><td>$0.02 – 0.2 / 人</td><td>LinkedIn 商务邮箱</td></tr>
+</table>
+<p>注册送 $1 额度，够跑几百条推文做验证，这比先绑卡再试用友好。</p>
+
+<h2>三步接入</h2>
+<pre><code># 1. 找接口，带报价和健康度
+monid discover -q "tiktok trending videos" -l 5 -j
+
+# 2. 读参数 schema（别猜字段名）
+monid inspect -p apify -e /apidojo/tweet-scraper -j
+
+# 3. 真跑
+monid run -p apify -e /apidojo/tweet-scraper \
+  -i '{"searchTerms":["关键词"],"maxItems":10}' -w -j</code></pre>
+<p><code>-i</code> 是 body，<code>--query</code> 是 query 参数，<code>--path</code> 是 path 参数——对应 inspect 返回的三块结构。<code>-w</code> 会自动轮询异步上游（比如 Apify 返回 202 + runId 的情况）。</p>
+
+<h2>它不做什么</h2>
+<p>这点很重要，能省你很多时间：<b>Monid 没有 Telegram 数据接口。</b>用 TG 相关关键词去搜，返回的是 Facebook / TikTok / X 的结果。如果你的需求是群成员、频道消息、协议号数据，这条路走不通，得自己解决。</p>
+<p>另外，如果你已经有某个平台的专用账号和 key（比如官方的 DataForSEO 账户），直接用自己的更便宜，没必要过一层网关。</p>
+
+<h2>适合谁</h2>
+<p>适合的场景：需求会变、量不稳定、不想为每个数据源单独开户。比如做竞品价格监控、社媒选题、线索筛选——今天抓 X，下周抓 Amazon，用同一套鉴权和同一个钱包。</p>
+<p>不适合的场景：单一数据源、超大流量、有长期合同价。那种情况直接找上游签更划算。</p>
+
+<div class="cta">
+<a href="https://monid.ai/?fpr=REPLACE_CODE" rel="sponsored nofollow">通过这个链接注册 Monid</a>，
+注册即送 $1 试用额度，够跑几百条数据验证效果。
+</div>
+
+<p><a href="./">← 返回目录</a></p>
+</div>
+</body>
+</html>

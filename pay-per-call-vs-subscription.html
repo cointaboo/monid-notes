@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>按次付费 vs 订阅：数据 API 的账该怎么算</title>
+<meta name="description" content="把订阅制和按次付费放在同一张账单上算：什么量级下按次更划算，什么情况下反而更贵。用真实价格算一遍。">
+<link rel="canonical" href="https://cointaboo.github.io/monid-notes/pay-per-call-vs-subscription.html">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"按次付费 vs 订阅：数据 API 的账该怎么算","datePublished":"2026-11-18"}
+</script>
+<style>
+:root{--ink:#111;--muted:#666;--line:#e6e6e6;--accent:#2563eb}
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);font:16px/1.75 -apple-system,"PingFang SC","Noto Sans SC",Segoe UI,sans-serif}
+.wrap{max-width:720px;margin:0 auto;padding:48px 22px 80px}
+h1{font-size:28px;line-height:1.35;margin:0 0 10px}
+h2{font-size:20px;margin:32px 0 10px}
+p{margin:0 0 14px}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+code{background:#f3f4f6;border-radius:4px;padding:1px 5px;font-size:14px;font-family:ui-monospace,Menlo,monospace}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:14px 0}
+th,td{border-bottom:1px solid var(--line);padding:8px 6px;text-align:left}
+th{color:var(--muted);font-weight:500}
+.meta{color:var(--muted);font-size:14px;margin-bottom:28px}
+.cta{border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:32px 0;background:#fafafa;font-size:15px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<p><a href="./">← 返回目录</a></p>
+<h1>按次付费 vs 订阅：数据 API 的账该怎么算</h1>
+<p class="meta">2026-11-18</p>
+
+<p>数据 API 主要有两种收法：按月订阅（不管用多少），或者按调用付费。选错的代价不是一笔钱，而是每个月都在漏。</p>
+
+<h2>先看你的用量分布</h2>
+<p>关键不在于"总量多少"，而在于<b>用量是不是平的</b>。</p>
+<table>
+<tr><th>用量形态</th><th>典型场景</th><th>更划算</th></tr>
+<tr><td>平稳、可预测</td><td>每日定时抓取、生产环境依赖</td><td>订阅（或签年框）</td></tr>
+<tr><td>脉冲、项目制</td><td>一次性调研、A/B 选品、临时监控</td><td>按次</td></tr>
+<tr><td>长尾、低频</td><td>十个接口各用一次</td><td>按次（订阅十个 = 十份钱）</td></tr>
+</table>
+
+<h2>算一笔真实的账</h2>
+<p>以抓 X 推文为例。按次价格是 $0.0004/条；同类服务月度订阅的起充常见在 $49/月。</p>
+<p>订阅套餐的盈亏平衡点：</p>
+<p><code>$49 ÷ $0.0004 = 122,500 条/月</code></p>
+<p>也就是说，<b>一个月跑不到 12 万条，订阅是亏的。</b>大多数团队的实际用量在几千到几万条之间，正落在按次更划算的区间。</p>
+
+<h2>订阅的隐性成本</h2>
+<p>订阅账单好算，隐性成本不好算：</p>
+<p>一是<b>为了"用回本"而做的无效调用</b>。月付之后，人的心理会变，会为了摊薄单价多跑一些本来不需要的数据，这些数据最后没人看，但占用了工程时间。</p>
+<p>二是<b>多源叠加</b>。一个需求订阅一个平台，五个需求就是五份订阅，而这些订阅的用量往往都只用了 10%。按次付费在这一点上是线性的：不用不花钱。</p>
+
+<h2>什么时候该果断签订阅</h2>
+<p>反过来也有明确的情况：</p>
+<p><b>生产环境依赖。</b>如果你的业务每天必须拿到数据，SLA、独享配额、优先级队列这些东西，是按次付费给不了的。按次平台在高峰期可能限流，这时候稳定性比单价重要。</p>
+<p><b>用量已经越过平衡点。</b>当月调用量稳定超过订阅能覆盖的量，尤其还能谈到年框折扣时，别犹豫。</p>
+<p><b>需要审计和合规。</b>企业采购走合同、走发票、走数据处理协议，这类要求订阅制天然满足。</p>
+
+<h2>一个实用的做法</h2>
+<p>先用按次跑两到三周，把真实用量摸出来——不是估算，是账单上的数字。然后拿这个数字去和订阅价对比。很多团队在这一步会发现：<b>自己以为的用量，是实际的五倍</b>。按这个虚高的估计去签订阅，就是给平台送钱。</p>
+<p>等用量稳定了、模式验证了，再谈订阅或年框，这时候你手里有数据，议价能力完全不一样。</p>
+
+<div class="cta">
+<a href="https://monid.ai/?fpr=REPLACE_CODE" rel="sponsored nofollow">Monid 是按次付费的数据网关</a>，
+注册送 $1，够你把真实用量跑出来再决定要不要订阅别家。
+</div>
+
+<p><a href="./">← 返回目录</a></p>
+</div>
+</body>
+</html>
